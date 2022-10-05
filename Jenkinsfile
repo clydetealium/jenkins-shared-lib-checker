@@ -49,11 +49,6 @@ pipeline {
   }
 
   stages {
-
-    stage('Git Checkout') {
-      steps { container(webhooks) { script { gitCheckout() } } }
-    }
-
     stage('Source Version Stuff') {
       steps {
         container('bub') {
