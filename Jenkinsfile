@@ -1,6 +1,3 @@
-String buildxContainer = 'buildx-container'
-String webhooks = 'webhooks'
-
 // Add parameters HERE.
 List customParameters = []
 
@@ -16,13 +13,13 @@ library(
 pipeline {
   agent {
     kubernetes {
-        label 'jenkins-demo'
-        containerTemplate {
-            name 'bub'
-            image 'tealium-docker-virtual-registry.jfrog.io/jenkins-webhooks-container:latest'
-            ttyEnabled true
-            command 'cat'
-        }
+      label 'jenkins-demo'
+      containerTemplate {
+        name 'bub'
+        image 'tealium-docker-virtual-registry.jfrog.io/jenkins-webhooks-container:latest'
+        ttyEnabled true
+        command 'cat'
+      }
     }
   }
 
@@ -49,7 +46,6 @@ pipeline {
 
     // Place pipeline-specific variables here.
     COMPONENT = "${env.JOB_NAME}"
-    JFROG_CLI_OFFER_CONFIG = "${false}"
   }
 
   stages {
@@ -58,81 +54,17 @@ pipeline {
       steps { container(webhooks) { script { gitCheckout() } } }
     }
 
-     stage('Initialize') {
-          steps {
-            container('bub') {
-                // checkout(scm: [
-                //     $class: 'GitSCM',
-                //     branches: [[
-                //         name: '*/SDLC-2445_telepresence_poc'
-                //     ]],
-                //     userRemoteConfigs: [[
-                //         credentialsId: 'github-cicd-bot-teal',
-                //         url: 'git@github.com:Tealium/jenkins-shared-lib.git'
-                //     ]]
-                //   ])
-                script {
-                    def sv = sourceVersion()
-                    echo "DEFAULT BRANCH: ${sv.defaultBranch}"
-                    echo "${this.class}"
-                    echo "sv.pipeline.class ${sv.pipeline.class}"
-                }
-            }
+    stage('Source Version Stuff') {
+      steps {
+        container('bub') {
+          script {
+            def sv = sourceVersion(githubOrg: 'clydetealium')
+            echo "DEFAULT BRANCH: ${sv.defaultBranch}"
+            echo "${this.class}"
+            echo "sv.pipeline.class ${sv.pipeline.class}"
           }
         }
-
+      }
+    }
   }
-
-}
-
-
-
-
-
-
-library(
-  identifier: 'jenkins-shared-lib@938d36ebfc1dffc32fb2bb7186e88290755e3f47',
-  retriever: modernSCM([
-    $class: 'GitSCMSource',
-    remote: 'git@github.com:Tealium/jenkins-shared-lib.git',
-    credentialsId: 'github-cicd-bot-teal'
-  ])
-)
-
-pipeline {
-    agent {
-        kubernetes {
-            label 'jenkins-demo'
-            containerTemplate {
-                name 'bub'
-                image 'tealium-docker-virtual-registry.jfrog.io/jenkins-webhooks-container:latest'
-                ttyEnabled true
-                command 'cat'
-            }
-        }
-    }
-    stages {
-        stage('Initialize') {
-          steps {
-            container('bub') {
-                checkout(scm: [
-                    $class: 'GitSCM',
-                    branches: [[
-                        name: '*/SDLC-2445_telepresence_poc'
-                    ]],
-                    userRemoteConfigs: [[
-                        credentialsId: 'github-cicd-bot-teal',
-                        url: 'git@github.com:Tealium/jenkins-shared-lib.git'
-                    ]]
-                  ])
-                script {
-                    def sv = sourceVersion()
-                    echo "DEFAULT BRANCH: ${sv.defaultBranch}"
-                    echo "${this.class}"
-                    echo "sv.pipeline.class ${sv.pipeline.class}"
-                }
-            }
-          }
-        }
-    }
 }
