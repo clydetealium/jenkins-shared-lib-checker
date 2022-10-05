@@ -53,7 +53,7 @@ pipeline {
       steps {
         container('bub') {
           script {
-            def sv = sourceVersion(githubOrg: 'clydetealium')
+            def sv = sourceVersion('clydetealium')
             echo "DEFAULT BRANCH: ${sv.defaultBranch}"
             echo "${this.class}"
             echo "sv.pipeline.class ${sv.pipeline.class}"
