@@ -2,7 +2,7 @@
 List customParameters = []
 
 library(
-  identifier: 'jenkins-shared-lib@70dc78c',
+  identifier: 'jenkins-shared-lib@70dc78c13b8d0a34c261b26c80d63bb5687e0cb1',
   retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/Tealium/jenkins-shared-lib',
