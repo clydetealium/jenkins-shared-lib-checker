@@ -1,6 +1,7 @@
 
 String comma = ','
 String sourceVersion = '1234567'
+String region = 'placeholder'
 
 library(
   identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
@@ -86,6 +87,7 @@ pipeline {
 
   environment {
     COMPONENTS = "${allComponentsStr}"
+    REGION = "${region}"
   }
 
   stages {

@@ -1,5 +1,8 @@
 
-String sourceVersion = '1234567'
+env {
+  sourceVersion = '1234567'
+  region = 'placeholder'
+}
 
 def lib = library(
   identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
@@ -10,7 +13,8 @@ def lib = library(
   ])
 )
 
-def lambdaUpdate = lib.com.tealium.jp.LambdaUpdateAfter.new(this, sourceVersion)
+def javaPlatformBuildHelper = lib.com.tealium.jp.JavaPlatformBuild.new(this)
+
 
 pipeline {
   agent {
@@ -27,20 +31,7 @@ pipeline {
 
   stages {
     
-    stage('Deploy AWS Lambda functions for the environment') {
-      environment {
-        SOURCE_VERSION = "${sourceVersion}"
-      }
-      steps {
-        script {
-          env.LAMBDA_FUNCTION_NAMES = "${(lambdaJarToFunctionNames.inject([]) { list, k, v -> env.COMPONENTS.contains(k) ? list + v : list }).join(comma)}"
-          println("LambdaFunctionNames: ${env.LAMBDA_FUNCTION_NAMES}")
-        }
-        container('bub') {
-          sh './jenkins/deploy_lambda_functions.sh'
-        }
-      }
-    }
+    javaPlatformBuildHelper.deployLambdaStage(this)
 
   }
 }
