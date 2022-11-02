@@ -1,14 +1,14 @@
-@Library('jenkins-shared-lib@v6.0.5') _
-// import com.tealium.Ansi
 
-// library(
-//   identifier: 'jenkins-shared-lib@70dc78c13b8d0a34c261b26c80d63bb5687e0cb1',
-//   retriever: modernSCM([
-//     $class: 'GitSCMSource',
-//     remote: 'https://github.com/Tealium/jenkins-shared-lib',
-//     credentialsId: 'github-cicd-bot-teal-token'
-//   ])
-// )
+def lib = library(
+  identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
+  retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/Tealium/jenkins-shared-lib',
+    credentialsId: 'github-cicd-bot-teal-token'
+  ])
+)
+
+def lambdaUpdate = lib.com.tealium.jp.LambdaUpdate.new(this)
 
 pipeline {
   agent {
@@ -23,40 +23,32 @@ pipeline {
     }
   }
 
-  options {
-    ansiColor('xterm')
-    buildDiscarder(logRotator(numToKeepStr: '15'))
-    skipStagesAfterUnstable()
-    timeout(time: 1, unit: 'HOURS')
-    timestamps()
-  }
-
-  // Environment variables within this top-level environment block can be seen across all containers in any stage.
-  environment {
-    // Common metadata used across every pipeline and many containers and helper scripts.
-    ACCOUNT_ID = "${env.ACCOUNT_ID}"
-    ACCOUNT_NAME = "${env.ACCOUNT_NAME}"
-    AWS_MAX_ATTEMPTS = '20'
-    ENVIRONMENT = "${env.ENVIRONMENT}"
-    ENVIRONMENT_PREFIX = "${env.ENVIRONMENT_PREFIX ?: ''}"
-    ENVIRONMENT_TYPE = "${env.ENVIRONMENT_TYPE}"
-    PLATFORM_NAME = "${env.PLATFORM_NAME}"
-    PREFIXED_ENVIRONMENT = "${env.ENVIRONMENT_PREFIX ?: ''}${env.ENVIRONMENT}"
-    REGION = "${params.REGION_OVERRIDE ?: env.REGION}"
-
-    // Place pipeline-specific variables here.
-    COMPONENT = "${env.JOB_NAME}"
-  }
-
   stages {
-    stage('Source Version Stuff') {
+    stage('lambda update PoC') {
       steps {
         container('bub') {
           script {
-            def sv = sourceVersion('clydetealium')
-            echo "DEFAULT BRANCH: ${sv.defaultBranch}"
-            echo "${this.class}"
-            echo "sv.pipeline.class ${sv.pipeline.class}"
+            def lambdaUpdate2 = lib.com.tealium.jp.LambdaUpdate.new(this)
+            def simpleShell = lib.com.tealium.SimpleShell.new(this)
+            
+            lambdaUpdate2.messagePlease('This is a message!')
+            simpleShell.execute("""
+              echo 'simpleShell type: ${simpleShell.class}'
+              echo 'simpleShell id": ${simpleShell.hashCode()}'
+            """)
+            
+            lambdaUpdate2.messagePlease("""
+              This is a message!
+              lambdaUpdate2 type: ${lambdaUpdate2.class}
+              lambdaUpdate2 id: ${lambdaUpdate2.hashCode()}
+            """)
+            
+            lambdaUpdate.messagePlease("""
+              This is a message!
+              lambdaUpdate type: ${lambdaUpdate.class}
+              lambdaUpdate id: ${lambdaUpdate2.hashCode()}
+              equality check: ${lambdaUpdate == lambdaUpdate2}
+            """)
           }
         }
       }
