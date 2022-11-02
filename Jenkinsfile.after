@@ -38,6 +38,7 @@ pipeline {
       steps {
         container('bub') {
           script {
+            env.SOURCE_VERSION = sourceVersion
             javaPlatformBuildHelper.updateLambdas(this)
           }
         }
