@@ -31,7 +31,7 @@ pipeline {
 
   stages {
     
-    stage('Deploy AWS Lambda functions for the environment', javaPlatformBuildHelper.deployLambdaStage(this))
+    javaPlatformBuildHelper.deployLambdaStage(this)
 
   }
 }
