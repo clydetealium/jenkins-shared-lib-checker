@@ -1,4 +1,5 @@
 
+String comma = ','
 String sourceVersion = '1234567'
 
 library(
@@ -18,6 +19,58 @@ Map<String,String> lambdaJarToFunctionNames = [
   'visitors_stream_processor_lambda':'visitor-ids-stream-consumer',
 ]
 
+List<String> kubeComponents = [
+  'amazon_uploader',
+  'audience_store_uploader',
+  'bulk_downloader',
+  'bulk_eventstream_processor',
+  'concurrent_users',
+  'data_distributor',
+  'data_distributor_batch',
+  'data_distributor_scheduler',
+  'databridge',
+  'delayed_action_processor',
+  'eventstream_processor',
+  'historic_visitor_processor',
+  'permission_cache',
+  'publish_engine',
+  'query_aggregator',
+  'uconnect',
+  'urest_service',
+  'tealium_hazelcast',
+  'visitor_cache',
+  'visitor_processor',
+  'visitor_service',
+  'visitors_stream_processor',
+]
+
+List<String> lambdaFunctions = [
+  'audience_sizing_jobs_launcher_lambda',
+  'data_access_worker_lambda',
+  'metrics_aggregator_lambda',
+  'visitor_api',
+  'visitors_stream_processor_lambda',
+]
+
+List<String> remainingComponents = [
+  'billing_data_collector',
+  'cloud_fn_lambda',
+  'data_access_repository',
+  'data_access_spectrum',
+  'data_access_worker',
+  'dataarchive_cron',
+  'datadownload_cron',
+  'dataharvester_cron',
+  'freetrial_cron',
+  'selfservice_cron',
+  'tagalerts_cron',
+  'user_migrator',
+]
+
+List<String> allComponents = kubeComponents + lambdaFunctions + remainingComponents
+
+String allComponentsStr = allComponents.join(comma)
+
 pipeline {
   agent {
     kubernetes {
@@ -29,6 +82,10 @@ pipeline {
         command 'cat'
       }
     }
+  }
+
+  environment {
+    COMPONENTS = "${allComponentsStr}"
   }
 
   stages {
