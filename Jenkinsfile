@@ -1,14 +1,14 @@
-// Add parameters HERE.
-List customParameters = []
+@Library('jenkins-shared-lib@v6.0.5') _
+// import com.tealium.Ansi
 
-library(
-  identifier: 'jenkins-shared-lib@70dc78c13b8d0a34c261b26c80d63bb5687e0cb1',
-  retriever: modernSCM([
-    $class: 'GitSCMSource',
-    remote: 'https://github.com/Tealium/jenkins-shared-lib',
-    credentialsId: 'github-cicd-bot-teal-token'
-  ])
-)
+// library(
+//   identifier: 'jenkins-shared-lib@70dc78c13b8d0a34c261b26c80d63bb5687e0cb1',
+//   retriever: modernSCM([
+//     $class: 'GitSCMSource',
+//     remote: 'https://github.com/Tealium/jenkins-shared-lib',
+//     credentialsId: 'github-cicd-bot-teal-token'
+//   ])
+// )
 
 pipeline {
   agent {
