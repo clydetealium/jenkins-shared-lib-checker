@@ -31,7 +31,15 @@ pipeline {
 
   stages {
     
-    javaPlatformBuildHelper.deployLambdaStage(this)
+    stage('Deploy AWS Lambda functions for the environment') {
+      steps {
+        container('bub') {
+          script {
+            javaPlatformBuildHelper.updateLambdas(this)
+          }
+        }
+      }
+    }
 
   }
 }
