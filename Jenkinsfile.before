@@ -1,0 +1,52 @@
+
+String sourceVersion = '1234567'
+
+library(
+  identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
+  retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/Tealium/jenkins-shared-lib',
+    credentialsId: 'github-cicd-bot-teal-token'
+  ])
+)
+
+Map<String,String> lambdaJarToFunctionNames = [
+  'audience_sizing_jobs_launcher_lambda':'audience-sizing-jobs-launcher',
+  'data_access_worker_lambda':'da-purge',
+  'metrics_aggregator_lambda':'metrics-aggregator',
+  'visitor_api':'visitor-api-delete,visitor-api-get',
+  'visitors_stream_processor_lambda':'visitor-ids-stream-consumer',
+]
+
+pipeline {
+  agent {
+    kubernetes {
+      label 'jenkins-demo'
+      containerTemplate {
+        name 'bub'
+        image 'tealium-docker-virtual-registry.jfrog.io/jenkins-webhooks-container:latest'
+        ttyEnabled true
+        command 'cat'
+      }
+    }
+  }
+
+  stages {
+    
+    stage('Deploy AWS Lambda functions for the environment') {
+      environment {
+        SOURCE_VERSION = "${sourceVersion}"
+      }
+      steps {
+        script {
+          env.LAMBDA_FUNCTION_NAMES = "${(lambdaJarToFunctionNames.inject([]) { list, k, v -> env.COMPONENTS.contains(k) ? list + v : list }).join(comma)}"
+          println("LambdaFunctionNames: ${env.LAMBDA_FUNCTION_NAMES}")
+        }
+        container('bub') {
+          sh './jenkins/deploy_lambda_functions.sh'
+        }
+      }
+    }
+
+  }
+}
