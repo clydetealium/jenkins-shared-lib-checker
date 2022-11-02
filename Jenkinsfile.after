@@ -3,7 +3,7 @@ def sourceVersion = '1234567'
 def region = 'placeholder'
 def javaPlatformBuildHelper = null
 
-library(
+def lib = library(
   identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
   retriever: modernSCM([
     $class: 'GitSCMSource',
@@ -29,7 +29,7 @@ pipeline {
     stage('init helper') {
       steps {
         script {
-          javaPlatformBuildHelper = new com.tealium.jp.JavaPlatformBuild(this)
+          javaPlatformBuildHelper = lib.com.tealium.jp.JavaPlatformBuild.new(this)
         }
       }
     }
