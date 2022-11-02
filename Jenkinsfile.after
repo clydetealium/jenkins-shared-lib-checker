@@ -1,8 +1,6 @@
 
 def sourceVersion = '1234567'
 def region = 'placeholder'
-def javaPlatformBuildHelper = null
-
 def lib = library(
   identifier: 'jenkins-shared-lib@SUP-1915_jp_lambda_update_issues',
   retriever: modernSCM([
@@ -11,6 +9,8 @@ def lib = library(
     credentialsId: 'github-cicd-bot-teal-token'
   ])
 )
+
+def javaPlatformBuildHelper = lib.com.tealium.jp.JavaPlatformBuild.new(this)
 
 pipeline {
   agent {
@@ -26,14 +26,6 @@ pipeline {
   }
 
   stages {
-    stage('init helper') {
-      steps {
-        script {
-          javaPlatformBuildHelper = lib.com.tealium.jp.JavaPlatformBuild.new(this)
-        }
-      }
-    }
-    
     stage('Deploy AWS Lambda functions for the environment') {
       steps {
         container('bub') {
